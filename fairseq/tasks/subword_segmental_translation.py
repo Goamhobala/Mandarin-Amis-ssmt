@@ -347,7 +347,7 @@ class SubwordSegmentalTranslationTask(FairseqTask):
         try:
             logger.info("Trying to load existing target lexicon..")
             tgt_lex = cls.load_dictionary(
-                os.path.join(vocab_path, "lex_dict.{}.txt".format(cfg.target_lang))
+                os.path.join(vocab_path, "dict.{}.txt".format(cfg.target_lang))
             )
             logger.info("Lexicon loaded.")
             logger.info("[{}] lexicon dictionary: {} types".format(cfg.target_lang, len(tgt_lex)))
@@ -407,9 +407,9 @@ class SubwordSegmentalTranslationTask(FairseqTask):
             tgt_lex.count = [counter[subword] for subword in symbols]
             tgt_lex.symbols = symbols
 
-            tgt_lex.save(os.path.join(vocab_path, "lex_dict.{}.txt".format(cfg.target_lang)))
+            tgt_lex.save(os.path.join(vocab_path, "dict.{}.txt".format(cfg.target_lang)))
             logger.info("Target lexicon dictionary saved to file: ")
-            logger.info(os.path.join(vocab_path, "lex_dict.{}.txt".format(cfg.target_lang)))
+            logger.info(os.path.join(vocab_path, "dict.{}.txt".format(cfg.target_lang)))
 
             print("--- Finished saving %s seconds ---" % (time.time() - start_time))
 
