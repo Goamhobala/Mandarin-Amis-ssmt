@@ -352,7 +352,7 @@ class SubwordSegmentalTranslationTask(FairseqTask):
             logger.info("Lexicon loaded.")
             logger.info("[{}] lexicon dictionary: {} types".format(cfg.target_lang, len(tgt_lex)))
 
-        except FileNotFoundError or TypeError:
+        except FileNotFoundError:
             logger.info("Target lexicon dictionary file does not exist.")
             logger.info("Creating subword lexicon from word dictionary...")
             start_time = time.time()
