@@ -5,7 +5,6 @@
 
 import math
 from dataclasses import dataclass, field
-from random import sample
 
 import torch
 from fairseq import metrics, utils
@@ -31,9 +30,9 @@ class SubwordSegmentalCrossEntropyCriterionConfig(FairseqDataclass):
     sentence_avg: bool = II("optimization.sentence_avg")
 
 
-def subword_segmental_nll_loss(lprobs, sample_size):
+def subword_segmental_nll_loss(lprobs):
     nll_loss = -torch.sum(lprobs)
-    loss = nll_loss / sample_size
+    loss = nll_loss
     return loss, nll_loss
 
 
@@ -74,11 +73,10 @@ class SubwordSegmentalCrossEntropyCriterion(FairseqCriterion):
         if "mode" in sample["net_input"] and sample["net_input"]["mode"] == "segment":
             return net_output  # split_indices
         else:
-
+            loss, nll_loss = self.compute_loss(net_output)
             sample_size = (
                 sample["target"].size(0) if self.sentence_avg else sample["ntokens"]
             )
-            loss, nll_loss = self.compute_loss(net_output, sample_size)
 
             logging_output = {
                 "loss": loss.data,
@@ -107,10 +105,10 @@ class SubwordSegmentalCrossEntropyCriterion(FairseqCriterion):
         lprobs = torch.gather(log_alpha, dim=0, index=index)
         return lprobs
 
-    def compute_loss(self, net_output, sample_size):
+    def compute_loss(self, net_output):
         log_alpha, log_R, seq_lens = net_output
         lprobs = self.get_lprobs(log_alpha, seq_lens)
-        loss, nll_loss = subword_segmental_nll_loss(lprobs, sample_size)
+        loss, nll_loss = subword_segmental_nll_loss(lprobs)
         return loss, nll_loss
 
     def compute_accuracy(self, model, net_output, sample):
